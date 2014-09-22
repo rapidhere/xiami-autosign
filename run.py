@@ -2,6 +2,7 @@
 
 import requests
 import simplejson
+import smtplib
 
 email = r""
 password = r""
@@ -51,9 +52,13 @@ def signin():
     # get result
     r = sess.get(cookie_url, headers=headers)
     rjson = simplejson.loads(r.content)
+    
+    # ger sign result
+    ret = rjson["data"]["userInfo"]["is"]
+    if not ret:
+        mail_out("Sign failed")
 
 def mail_out(message):
-    pass
 
 if __name__ == "__main__":
     try:
