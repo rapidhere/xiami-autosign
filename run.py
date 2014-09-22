@@ -8,10 +8,9 @@ password = r""
 
 login_url = r"https://login.xiami.com/member/login"
 signin_url = r"http://www.xiami.com/task/signin"
+cookie_url = r"http://www.xiami.com/index/home"
 
 headers = {
-    "Host": "www.xiami.com",
-    "Referer": "http://www.xiami.com/",
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.117 Safari/537.36",
     "Pragma": "no-cache",
     "Connection": "keep-alive",
@@ -23,19 +22,43 @@ headers = {
 # create session
 sess = requests.Session()
 
-# login
-login_data = {
-    "done": "http://www.xiami.com",
-    "from": "web",
-    "email": email,
-    "password": password,
-    "submit": "登 录",
-}
+def login():
+    # login
+    login_data = {
+        "done": "http://www.xiami.com",
+        "from": "web",
+        "email": email,
+        "password": password,
+        "submit": "登 录",
+    }
 
-r = sess.get("http://www.xiami.com/index/home", headers=headers)
+    r = sess.post(login_url, headers=headers, data=login_data)
+    rjson = simplejson.loads(r.content)
 
-# sign in
-r = sess.post(signin_url, data={}, headers={
-    "Referer": "http://www.xiami.com/member/login",
-    "User-Agent": 'Mozilla/5.0 (IsomByt; checker)',
-})
+    if not rjson["status"]:
+        raise Exception("Login failed!")
+
+def signin():
+    # complete sessions
+    r = sess.get(cookie_url, headers=headers)
+
+    # sign in
+    r = sess.post(signin_url, data={}, headers={
+        "Referer": "http://www.xiami.com/member/login",
+        "User-Agent": 'Mozilla/5.0 (IsomByt; checker)',
+    })
+
+    # get result
+    r = sess.get(cookie_url, headers=headers)
+    rjson = simplejson.loads(r.content)
+
+def mail_out(message):
+    pass
+
+if __name__ == "__main__":
+    try:
+        login()
+        signin()
+    except Exception as e:
+        mail_out(str(e))
+
