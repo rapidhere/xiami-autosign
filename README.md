@@ -2,7 +2,7 @@ A simple daily sign job on: www.xiami.com
 
 ### config before run
 
-add config.py like this
+in run.py
 
 ```python
 email="xxxxx"
