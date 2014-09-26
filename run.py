@@ -59,6 +59,7 @@ def signin():
         mail_out("Sign failed")
 
 def mail_out(message):
+    pass
 
 if __name__ == "__main__":
     try:
